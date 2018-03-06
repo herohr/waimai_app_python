@@ -7,15 +7,19 @@ from waimai_app.restful import FormParser
 
 def authorize(func):
     def _func(self, request):
+        u_auth = "authorization"
+        v_auth = "authorization_v"
         au = None
-        if request.method in {"POST", "GET"}:
-            au = au or request.COOKIES.get("sessionID") or request.GET.get("authorization") or \
-             request.POST.get("authorization")
-        else:
-            form = FormParser(request)
-            au = form.get("authorization")
-            setattr(request, "form", form)
+        form = FormParser(request)
+        au = au or request.GET.get(u_auth) or \
+             form.get(u_auth)
+        if not au:
+            au = request.GET.get(v_auth) or form.get(v_auth)
+
         user_id = sessions.get(au)
+        user = None
+
+
         if user_id is not None:
             try:
                 user = models.User.objects.get(id=user_id)

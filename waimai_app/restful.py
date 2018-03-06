@@ -1,3 +1,5 @@
+import json
+
 from django.http import JsonResponse, QueryDict
 
 
@@ -40,10 +42,13 @@ class RESTFul:
 class FormParser:
     def __init__(self, request):
         self.request = request
-        if hasattr(request, "form"):
-            self.query_dict = request.form
+        if request.META["CONTENT_TYPE"] == "application/json":
+            self.query_dict = json.loads(request.body.decode())
         else:
-            self.query_dict = self.to_query_dict()
+            if hasattr(request, "form"):
+                self.query_dict = request.form
+            else:
+                self.query_dict = self.to_query_dict()
 
     def to_query_dict(self):
         return QueryDict(self.request.body, encoding=self.request.encoding)

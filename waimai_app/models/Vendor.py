@@ -4,6 +4,7 @@ from django.db import models
 class Vendor(models.Model):
     id = models.AutoField(primary_key=True)
     phone = models.CharField(max_length=32)
+    password = models.CharField(max_length=256)
 
     verify_condition = models.IntegerField(default=0)
     register_time = models.DateTimeField()
@@ -11,6 +12,8 @@ class Vendor(models.Model):
 
 class VendorBaseInfo(models.Model):
     id = models.AutoField(primary_key=True)
+    vendor_id = models.IntegerField()
+
     name = models.CharField(max_length=64)
     phone = models.CharField(max_length=32)
     address = models.CharField(max_length=256)
