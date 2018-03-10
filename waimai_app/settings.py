@@ -125,6 +125,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+root = "http://fucking.free.ngrok.cc"
+
 OSS_KEY = "LTAIaNUnqzQf5kdD"
 OSS_SECRET = "meEuxqz8GAGtbtuiZhj72C0XPiLgoY"
 OSS_IMAGE_BUCKET_NAME = "waimai-test"

@@ -8,7 +8,15 @@ from waimai_app.rd_session import sessions
 from waimai_app.restful import FormParser
 
 
-class UserAPI(restful.RESTFul):
+"""
+注册流程：
+  先获取验证码，然后获取短信验证码， 此时服务器记录短信验证码的request-id。
+  用户提交正确的短信验证码，服务器此条requestID的验证状态。
+  用户提交密码，服务器根据requestID找到验证码的验证状态，允许用户注册。
+"""
+
+
+class VendorAPI(restful.RESTFul):
     def post(self, request):
         form = FormParser(request)
         pw = form.get("password")
@@ -46,7 +54,7 @@ class UserAPI(restful.RESTFul):
         pass
 
 
-class UserInfoAPI(restful.RESTFul):
+class VendorInfoAPI(restful.RESTFul):
     @authorize
     def get(self, request):
         get_id = request.GET.get("id") or request.user.id
@@ -125,8 +133,8 @@ class UserInfoAPI(restful.RESTFul):
         return JsonResponse({"changed": changed}, status=200)
 
 
-userAPI = UserAPI()
-user_info_API = UserInfoAPI()
+vendorAPI = VendorAPI()
+vendor_info_API = VendorInfoAPI()
 
 
 def login(request):

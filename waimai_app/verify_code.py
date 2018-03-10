@@ -28,8 +28,18 @@ def send_message(phone_number, code):
 
 
 class VerifyCodeAPI(restful.RESTFul):
-    @auth.authorize
     def get(self, request):
+        # def sync():
+        #     with open("verify_code.txt", "r") as file:
+        #         content = file.readlines()
+        #         for i in content:
+        #             _id, code, local_path = i.split()
+        #             root = "http://verifyimagexw.oss-cn-hangzhou.aliyuncs.com/"
+        #             new_code = VerifyCodeStore(id=_id, oss_url=root+_id, local_path=local_path, code=code)
+        #             new_code.save()
+        #
+        # sync()
+
         line = random.randint(0, 10000)
         verify_code = VerifyCodeStore.objects.raw(
             "select * from waimai_app_verifycodestore limit {},1;".format(line))

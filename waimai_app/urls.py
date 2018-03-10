@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from waimai_app import UserClient, image, verify_code
+from waimai_app import UserClient, image, verify_code, VendorClient
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,6 +23,10 @@ urlpatterns = [
     path('users', UserClient.user.userAPI.router(methods=["POST", ])),
     path('users/login', UserClient.user.login),
     path('users/info', UserClient.user.user_info_API.router(methods=["GET", "POST", "PUT"])),
+
+    path('vendors/info', VendorClient.vendor_info_API.router(["GET", "POST", "PUT"])),
+    path("vendors/login", VendorClient.login),
+    path("vendors", VendorClient.vendorAPI.router(["POST"])),
 
     path("verify_code", verify_code.verify_code_API.router(methods=["GET", "POST"])),
     path("verify_message", verify_code.message_API.router(methods=["PUT"])),

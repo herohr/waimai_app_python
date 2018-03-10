@@ -20,7 +20,7 @@ class Manager:
     def uuid():
         return uuid.uuid1()
 
-    def create_session(self, _id):
+    def create_session(self, _id,):
         _uuid = self.uuid()
 
         self.set("{}:{}".format(self.name, _id), _uuid)

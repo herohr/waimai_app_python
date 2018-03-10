@@ -1,3 +1,4 @@
+import json
 import logging
 import time
 
@@ -38,6 +39,7 @@ class ImageStoreAPI(restful.RESTFul):
     @authorize
     def get(self, request):
         image_id = request.GET.get("image_id")
+
         if image_id:
             try:
                 image = ImageStorage.objects.get(id=image_id)
@@ -118,6 +120,15 @@ class ImageStoreAPI(restful.RESTFul):
             oss_key="UNKNOWN",
             create_time=timezone.now()
         )
+
+        callback_dict = {
+            "callbackUrl": settings.root + "/images/callback",
+            "callbackBody": "bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${"
+                            "mimeType}&imageInfo.height=${imageInfo.height}&imageInfo.width=${"
+                            "imageInfo.width}&imageInfo.format=${imageInfo.format} "
+        }
+
+        callback = json.dumps(callback_dict)
         new_image.save()
         filename = "{}.{}".format(new_image.id, img_format)
         new_image.oss_key = filename
@@ -131,6 +142,7 @@ class ImageStoreAPI(restful.RESTFul):
                 "Signature": signature,
                 "key": new_image.oss_key,
                 "success_action_status": 200,
+                "callback": callback
             },
             "max_size": 1024 ** 3,
             "host": "{}.{}".format(_bucket_name, _endpoint),
@@ -172,5 +184,8 @@ class ImageStoreAPI(restful.RESTFul):
                 "reason": "form_id is required"
             }, status=400)
 
+
+# class ImageCallBack(restful.RESTFul):
+    # def post(self, request):
 
 image_store_API = ImageStoreAPI()
