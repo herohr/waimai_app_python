@@ -24,9 +24,12 @@ def authorize(func):
             try:
                 if is_user:
                     user = models.User.objects.get(id=user_id)
+                    setattr(request, "is_from_user", True)
                 else:
                     user = models.Vendor.objects.get(id=user_id)
+                    setattr(request, "is_from_user", False)
                 setattr(request, "user", user)
+
                 return func(self, request)
             except models.User.DoesNotExist or models.Vendor.DoesNotExist:
                 pass

@@ -9,7 +9,6 @@ with requests.session() as session:
     resp = session.post('http://localhost:8000/vendors', data={
         "phone": "testtest",
         "password": "qwekqjqlasdasd",
-        "email": "sficasd"
     })
 
 

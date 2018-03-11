@@ -185,7 +185,12 @@ class ImageStoreAPI(restful.RESTFul):
             }, status=400)
 
 
-# class ImageCallBack(restful.RESTFul):
-    # def post(self, request):
+class ImageCallBack(restful.RESTFul):
+    def post(self, request):
+        form = restful.FormParser(request)
+        print(form.get("bucket"))
+        print(form.get("object"))
+        print(form.get("mimeType"))
 
 image_store_API = ImageStoreAPI()
+image_callback_API = ImageCallBack()

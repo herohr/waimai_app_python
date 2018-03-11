@@ -14,6 +14,17 @@ class CourseAPI(RESTFul):
         if course_id is not None:
             try:
                 course = Course.objects.get(id=course_id)
+                i = course
+                return JsonResponse({
+                    "course_id": i.id,
+                    "name": i.name,
+                    "prime": i.prime,
+                    "info": i.info,
+                    "img_url": i.url,
+                    "big_img_url": i.url,
+                    "rate": i.rate,
+                    "sales": i.sales
+                }, status=200)
             except Course.DoesNotExist:
                 return JsonResponse({
                     "reason": "course_id not found"
@@ -81,5 +92,6 @@ class CourseAPI(RESTFul):
         _ = {course.__setattr__(k, v) for k, v in items.items() if v is not None}
 
         return JsonResponse({}, status=200)
+
 
 course_API = CourseAPI()

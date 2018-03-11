@@ -30,5 +30,6 @@ urlpatterns = [
 
     path("verify_code", verify_code.verify_code_API.router(methods=["GET", "POST"])),
     path("verify_message", verify_code.message_API.router(methods=["PUT"])),
-    path("images", image.image_store_API.router(methods=["GET", "POST", "PUT"]))
+    path("images", image.image_store_API.router(methods=["GET", "POST", "PUT"])),
+    path("images/callback", image.image_callback_API.router(methods=["POST"]))
 ]
