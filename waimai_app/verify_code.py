@@ -8,6 +8,7 @@ from waimai_app.models import VerifyCodeStore, VerifyCodeCache, VerifyMessage
 from waimai_app import restful
 from waimai_app import auth
 
+
 LOCAL_URL = "http://localhost:8808/msg"
 
 
@@ -55,9 +56,10 @@ class VerifyCodeAPI(restful.RESTFul):
         }, status=200)
 
     def post(self, request):
-        phone_number = request.POST.get("phone")
-        code = request.POST.get("code")
-        rdm_code = request.POST.get("rdm_code")
+        form = restful.FormParser(request)
+        phone_number = form.get("phone_number")
+        code = form.get("code")
+        rdm_code = form.get("rdm_code")
 
         try:
             code_cache = VerifyCodeCache.objects.get(relative_msg=rdm_code)
@@ -80,7 +82,8 @@ class VerifyCodeAPI(restful.RESTFul):
             if resp["Code"] != "OK":
                 if resp["Code"] == "isv.BUSINESS_LIMIT_CONTROL":
                     return JsonResponse({
-                        "reason": "isv.BUSINESS_LIMIT_CONTROL"
+                        "reason": "isv.BUSINESS_LIMIT_CONTROL",
+                        "code": "isv.BUSINESS_LIMIT_CONTROL"
                     }, status=400)
 
                 return JsonResponse({
@@ -113,6 +116,11 @@ class MessageAPI(restful.RESTFul):
 
         request_id = form.get("request_id")
         code = form.get("code")
+        if code is None:
+            return JsonResponse({
+                "reason": "code required",
+                "code": "FORM_ITEM_LACK"
+            }, status=400)
 
         if request_id is not None:
             try:
@@ -122,7 +130,7 @@ class MessageAPI(restful.RESTFul):
                     "reason": "wrong request_id"
                 }, status=404)
 
-            if code == message.code:
+            if str(code) == message.code:
                 message.verified = True
                 message.save()
 
@@ -137,7 +145,8 @@ class MessageAPI(restful.RESTFul):
 
         else:
             return JsonResponse({
-                "reason": "request_id is required"
+                "reason": "request_id is required",
+                "code": "FORM_ITEM_LACK"
             }, status=400)
 
 

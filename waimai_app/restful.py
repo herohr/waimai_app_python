@@ -42,6 +42,7 @@ class RESTFul:
 class FormParser:
     def __init__(self, request):
         self.request = request
+        print(request.META["CONTENT_TYPE"])
         if request.META["CONTENT_TYPE"] == "application/json":
             self.query_dict = json.loads(request.body.decode())
         else:
@@ -53,8 +54,8 @@ class FormParser:
     def to_query_dict(self):
         return QueryDict(self.request.body, encoding=self.request.encoding)
 
-    def get(self, key, default=None):
-        return self.query_dict.get(key, default=default)
+    def get(self, key):
+        return self.query_dict.get(key)
 
     # def get_one(self, key, default=None):
     #     val = self.query_dict.get(key, default)

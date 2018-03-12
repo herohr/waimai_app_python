@@ -33,7 +33,7 @@ class VendorBaseInfo(models.Model):
 
 
 class VendorAuthInfo(models.Model):
-    vendor_id = models.IntegerField(null=False)
+    vendor_id = models.IntegerField(null=False, unique=True)
 
     checked = models.BooleanField(null=False, default=False)
     vendor_responsible_person_name = models.CharField(null=False, verbose_name="负责人名", max_length=32)

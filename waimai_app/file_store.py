@@ -5,6 +5,11 @@ import datetime
 import base64
 import json
 from waimai_app.models import FileStorage
+from django.utils import timezone
+
+
+class FileStoreException(BaseException):
+    pass
 
 
 class OSS:
@@ -22,15 +27,15 @@ class OSS:
 
         return self.bucket.sign_url(method, path, expires, headers, params)  # 签名URL
 
-    def policy(self, expires, path, filename=None, length_range=None, redirect_to=None, status=None):  # 签名POST表单
+    def policy(self, expires, key, length_range=None, redirect_to=None, status=None):  # 签名POST表单
 
         now = datetime.datetime.now()
         expiration = now + datetime.timedelta(seconds=int(expires))
         expiration = expiration.isoformat() + "Z"  # 设置ISO format时间
 
         conditions = []
-        if filename is not None:  # 指定文件名
-            conditions.append(["eq", "$key", path + filename])
+        if key is not None:  # 指定文件名
+            conditions.append(["eq", "$key", key])
         if length_range is not None:
             conditions.append(["content-length-range", length_range[0], length_range[1]])
 
@@ -75,28 +80,27 @@ class FileStore:
 
         self.with_db = with_db
 
-    def get_upload_form(self, filename, root="/", max_size=1024**3, user_id=None):
+    def get_upload_form(self, filename=None, root="/", max_size=1024**3, file_id=None):
         print(root+filename)
         file_id = None
+        oss_key = root + filename
         if self.with_db:
-            if not user_id:
-                raise Exception("if with_db user_id is required")
-            file = FileStorage(user_id=user_id,
-                               bucket=self.bucket_name,
+            file = FileStorage(bucket=self.bucket_name,
                                endpoint=self.endpoint,
                                verified=False,
-                               oss_key=root+filename)
+                               create_time=timezone.now())
             file.save()
-
+            file.oss_key = "{}-{}".format(file.id, filename)
             file_id = file.id
+            oss_key = file.oss_key
 
-        policy, signature = self.oss.policy(600, root, filename, length_range=(0, max_size), status=200)
+        policy, signature = self.oss.policy(600, oss_key, length_range=(0, max_size), status=200)
         form = {
             "form_item": {
                 "OSSAccessKeyId": self.id,
                 "policy": policy,
                 "Signature": signature,
-                "key": root+filename,
+                "key": oss_key,
                 "success_action_status": 200,
             },
             "max_size": max_size,
@@ -106,12 +110,37 @@ class FileStore:
         }
         return form
 
+    def get_url(self, file_id):
+        try:
+            file = FileStorage.objects.get(file_id)
+        except FileStorage.DoesNotExist:
+            return ""
+
+        if self.control_lever in (FileStore.PUBLIC_READ, FileStore.PUBLIC_RW):
+            return "http://{}.{}{}".format(self.bucket_name, self.endpoint, file.oss_key)
+        else:
+            self.oss.sign_url("GET", file.oss_key, expires=self.expires)
+
+    @staticmethod
+    def set_verified(file_id, verified=True):
+        try:
+            file = FileStorage.objects.get(id=file_id)
+        except FileStorage.DoesNotExist:
+            raise FileStoreException("The file_id {} not exist".format(file_id))
+
+        file.verified = verified
+        file.save()
+
+
+
     @staticmethod
     def get_storage(bucket_name, control_level):
         _id = settings.OSS_KEY
         _key = settings.OSS_SECRET
         return FileStore(_id=_id, _key=_key, bucket_name=bucket_name,
                          endpoint=settings.OSS_ENDPOINT, control_lever=control_level)
+
+
 
 
 """
