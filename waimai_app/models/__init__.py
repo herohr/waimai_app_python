@@ -5,3 +5,4 @@ from .Vendor import VendorBaseInfo, Vendor, VendorAuthInfo
 from .Address import UserAddress
 from .Order import Order
 from .Course import Course
+from .FileStore import FileStorage

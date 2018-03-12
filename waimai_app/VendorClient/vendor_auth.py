@@ -7,9 +7,14 @@ from waimai_app.auth import authorize
 from waimai_app.rd_session import sessions
 from waimai_app.restful import FormParser
 from waimai_app.image import get_url
+from waimai_app.auth import authorize
+from waimai_app.file_store import FileStore
+from django.conf import settings
 
+vendorAuthFileStore = FileStore.get_storage(settings.OSS_VENDOR_AUTH_BUCKET_NAME, FileStore.PRIVATE)
 
 class VendorAuthAPI(restful.RESTFul):
+    @authorize
     def get(self, request):
         form = FormParser(request)
         vendor_id = form.get("vendor_id")
@@ -30,7 +35,7 @@ class VendorAuthAPI(restful.RESTFul):
         image_id = auth_info.vendor_license_imageID
 
         try:
-            image = ImageStorage.objects.get(id=image_id)
+            image = .objects.get(id=image_id)
             url, _ = get_url(image.id, image.oss_key)
 
             return JsonResponse({
@@ -45,11 +50,18 @@ class VendorAuthAPI(restful.RESTFul):
                 "code": "SERVER_ERROR"
             }, status=500)
 
+    @authorize
     def post(self, request):
         form = FormParser(request)
 
         person_name = form.get("person_name")
         person_ident = form.get("person_id")
+
+
+
+
+
+
         ident_image_id = form.get("id_image_id")
         license_image_id = form.get("licence_image_id")
 

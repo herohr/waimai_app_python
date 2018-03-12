@@ -121,14 +121,14 @@ class ImageStoreAPI(restful.RESTFul):
             create_time=timezone.now()
         )
 
-        callback_dict = {
-            "callbackUrl": settings.root + "/images/callback",
-            "callbackBody": "bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${"
-                            "mimeType}&imageInfo.height=${imageInfo.height}&imageInfo.width=${"
-                            "imageInfo.width}&imageInfo.format=${imageInfo.format} "
-        }
-
-        callback = json.dumps(callback_dict)
+        # callback_dict = {
+        #     "callbackUrl": settings.root + "/images/callback",
+        #     "callbackBody": "bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${"
+        #                     "mimeType}&imageInfo.height=${imageInfo.height}&imageInfo.width=${"
+        #                     "imageInfo.width}&imageInfo.format=${imageInfo.format} "
+        # }
+        #
+        # callback = json.dumps(callback_dict)
         new_image.save()
         filename = "{}.{}".format(new_image.id, img_format)
         new_image.oss_key = filename
@@ -142,7 +142,6 @@ class ImageStoreAPI(restful.RESTFul):
                 "Signature": signature,
                 "key": new_image.oss_key,
                 "success_action_status": 200,
-                "callback": callback
             },
             "max_size": 1024 ** 3,
             "host": "{}.{}".format(_bucket_name, _endpoint),

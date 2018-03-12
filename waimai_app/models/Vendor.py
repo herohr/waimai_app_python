@@ -6,6 +6,8 @@ class Vendor(models.Model):
     phone = models.CharField(max_length=32)
     password = models.CharField(max_length=256, null=True)
 
+    in_canteen = models.BooleanField(null=False, default=False)
+
     verify_condition = models.IntegerField(default=0)
     register_time = models.DateTimeField()
 

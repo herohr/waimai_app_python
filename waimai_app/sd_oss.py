@@ -74,6 +74,8 @@ if __name__ == "__main__":
     content = b"fucker"
     a.send("PUT {} HTTP/1.1\r\nHost: {}\r\nContent-Length: {}\r\n\r\n".format(url, host, len(content)).encode() + content)
     print(a.recv(2048))
+
+
 """
 图片如何储存：
     储存于阿里云OSS

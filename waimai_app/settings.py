@@ -129,5 +129,10 @@ root = "http://fucking.free.ngrok.cc"
 
 OSS_KEY = "LTAIaNUnqzQf5kdD"
 OSS_SECRET = "meEuxqz8GAGtbtuiZhj72C0XPiLgoY"
+
 OSS_IMAGE_BUCKET_NAME = "waimai-test"
 OSS_ENDPOINT = "oss-cn-shenzhen.aliyuncs.com"
+
+OSS_VENDOR_AUTH_BUCKET_NAME = "vendorauthxw"
+OSS_COURSE_INFO_BUCKET_NAME = "courseinfoxw"
+OSS_USER_INFO_BUCKET_NAME = "userinfoxw"
